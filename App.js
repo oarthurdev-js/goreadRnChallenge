@@ -5,7 +5,7 @@ import HomeScreen from './src/pages/repos';
 import WebViewRepo from './src/pages/repositories';
 const Stack = createNativeStackNavigator();
 
-function App({route}) {
+function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -17,7 +17,10 @@ function App({route}) {
         <Stack.Screen
           name="WebViewRepo"
           component={WebViewRepo}
-          options={{title: ''}}
+          options={({route}) => ({
+            title: route.params.paramKey,
+            headerTitleAlign: 'left',
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>

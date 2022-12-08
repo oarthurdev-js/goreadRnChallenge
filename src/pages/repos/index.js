@@ -42,7 +42,7 @@ export default function HomeScreen({navigation}) {
     const {name, stargazers_count, owner} = item.item;
 
     async function handleRepo() {
-      navigation.navigate('WebViewRepo', {paramKey: name});
+      navigation.navigate('WebViewRepo', {paramKey: name, owner: owner});
     }
     return (
       <TouchableOpacity onPress={() => handleRepo()}>
@@ -55,9 +55,9 @@ export default function HomeScreen({navigation}) {
             />
             <Text style={estilos.textInsideRow}>{name}</Text>
             {/* stargazers */}
-            <Text style={estilos.textStars}>{stargazers_count} stars</Text>
           </View>
           <View style={estilos.loginOwner}>
+            <Text style={estilos.textStars}>{stargazers_count} stars</Text>
             {/* login dentro de owner */}
             <Text>{owner.login}</Text>
           </View>
@@ -127,7 +127,8 @@ const estilos = StyleSheet.create({
   },
   textStars: {
     textAlign: 'right',
-    // marginLeft: 100,
+    marginRight: 50,
+    alignSelf: 'flex-end',
   },
   loginOwner: {
     marginLeft: 63,
