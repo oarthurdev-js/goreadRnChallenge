@@ -17,29 +17,35 @@ export default function HomeScreen({navigation}) {
 
   useEffect(() => {
     axios
-      .get('https://api.github.com/search/repositories?q=Q')
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        setListaRepos(data.items);
+      .get(`https://api.github.com/search/repositories?q=${repoSearch}`) // url dinamico
+      .then(res => { // retorno da promise é um objeto de resposta (res)
+        console.log(res.data);
+        setListaRepos(res.data.items); // pra extrair a resposta de fato usa o res.data
       })
       .catch(error => {
         console.log(error);
       });
-  }, []);
+  }, [repoSearch]); // texto da query como dependência do useEffect
 
-  function Repos(items) {
-    const {name, stargazes_count, avatar_url, login} = items.items;
+  // TODO: toda vez q o texto da query mudar, a api vai ser chamada. Adicionar a parada do vídeo aqui.
+
+  function Repo(item) {
+    const {name, stargazers_count, owner} = item.item; // Mudei o stargazeRs e substituí a foto e o login por owner
 
     return (
       <View style={estilos.bodyContent}>
         <View style={estilos.rowView}>
-          <Image source={avatar_url} style={estilos.imageImported} />
+          {/* foto dentro de owner */}
+          <Image source={owner.avatar_url} style={estilos.imageImported} />
           <Text style={estilos.textInsideRow}>{name}</Text>
-          <Text style={estilos.textStars}>{stargazes_count}</Text>
+          
+          {/* stargazeRs */}
+          <Text style={estilos.textStars}>{stargazers_count}</Text>
+
         </View>
         <View style={estilos.loginOwner}>
-          <Text>{login}</Text>
+          {/* login dentro de owner */}
+          <Text>{owner.login}</Text>
         </View>
         <View style={estilos.horizontalLine} />
       </View>
@@ -57,10 +63,10 @@ export default function HomeScreen({navigation}) {
       />
       <FlatList
         data={listaRepos}
-        keyExtractor={items => items.id}
+        keyExtractor={item => item.id}
         // eslint-disable-next-line react-native/no-inline-styles
         contentContainerStyle={{flexGrow: 1}}
-        renderItem={Repos}
+        renderItem={Repo}
       />
     </View>
   );
