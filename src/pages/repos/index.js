@@ -2,10 +2,9 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  TouchableOpacity,
   Image,
   FlatList,
+  TouchableOpacity,
 } from 'react-native';
 import axios from 'axios';
 import React, {useEffect, useState} from 'react';
@@ -17,32 +16,54 @@ export default function HomeScreen({navigation}) {
 
   useEffect(() => {
     axios
+      .get(`https://api.github.com/search/repositories?q=${repoSearch}`)
+      .then(res => {
+        console.log(res.data);
+        setListaRepos(res.data.items);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [repoSearch]);
+
+  useEffect(() => {
+    axios
       .get('https://api.github.com/search/repositories?q=Q')
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        setListaRepos(data.items);
+      .then(res => {
+        console.log(res.data);
+        setListaRepos(res.data.items);
       })
       .catch(error => {
         console.log(error);
       });
   }, []);
 
-  function Repos(items) {
-    const {name, stargazes_count, avatar_url, login} = items.items;
+  function Repo(item) {
+    const {name, stargazers_count, owner} = item.item;
 
+    async function handleRepo() {
+      navigation.navigate('WebViewRepo', {paramKey: name});
+    }
     return (
-      <View style={estilos.bodyContent}>
-        <View style={estilos.rowView}>
-          <Image source={avatar_url} style={estilos.imageImported} />
-          <Text style={estilos.textInsideRow}>{name}</Text>
-          <Text style={estilos.textStars}>{stargazes_count}</Text>
+      <TouchableOpacity onPress={() => handleRepo()}>
+        <View style={estilos.bodyContent}>
+          <View style={estilos.rowView}>
+            {/* foto dentro de owner */}
+            <Image
+              source={{uri: owner.avatar_url}}
+              style={estilos.imageImported}
+            />
+            <Text style={estilos.textInsideRow}>{name}</Text>
+            {/* stargazers */}
+            <Text style={estilos.textStars}>{stargazers_count} stars</Text>
+          </View>
+          <View style={estilos.loginOwner}>
+            {/* login dentro de owner */}
+            <Text>{owner.login}</Text>
+          </View>
+          <View style={estilos.horizontalLine} />
         </View>
-        <View style={estilos.loginOwner}>
-          <Text>{login}</Text>
-        </View>
-        <View style={estilos.horizontalLine} />
-      </View>
+      </TouchableOpacity>
     );
   }
 
@@ -57,10 +78,10 @@ export default function HomeScreen({navigation}) {
       />
       <FlatList
         data={listaRepos}
-        keyExtractor={items => items.id}
+        keyExtractor={item => item.id}
         // eslint-disable-next-line react-native/no-inline-styles
         contentContainerStyle={{flexGrow: 1}}
-        renderItem={Repos}
+        renderItem={Repo}
       />
     </View>
   );
@@ -99,13 +120,14 @@ const estilos = StyleSheet.create({
   },
   rowView: {
     flexDirection: 'row',
+    alignContent: 'space-between',
   },
   textInsideRow: {
     marginHorizontal: 10,
   },
   textStars: {
     textAlign: 'right',
-    marginLeft: 60,
+    // marginLeft: 100,
   },
   loginOwner: {
     marginLeft: 63,

@@ -1,14 +1,11 @@
-// In App.js in a new project
-
 import * as React from 'react';
-import {View, Text} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeScreen from './src/pages/repos';
-
+import WebViewRepo from './src/pages/repositories';
 const Stack = createNativeStackNavigator();
 
-function App() {
+function App({route}) {
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -16,6 +13,11 @@ function App() {
           name="Home"
           component={HomeScreen}
           options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="WebViewRepo"
+          component={WebViewRepo}
+          options={{title: ''}}
         />
       </Stack.Navigator>
     </NavigationContainer>
